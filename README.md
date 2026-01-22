@@ -96,7 +96,6 @@ Make sure you have:
 
 ## 1️⃣ Clone the Repository
 
-```bash
 git clone https://github.com/dishamittalnitb/Real-time-chat-moderation-and-monitoring.git
 cd Real-time-chat-moderation-and-monitoring
 
