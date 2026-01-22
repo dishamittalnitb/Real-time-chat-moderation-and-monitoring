@@ -100,6 +100,8 @@ Make sure you have:
 git clone https://github.com/dishamittalnitb/Real-time-chat-moderation-and-monitoring.git
 cd Real-time-chat-moderation-and-monitoring
 
+## 2️⃣ Run the FastAPI Moderation Service
+
 cd fastapi
 pip install -r requirements.txt
 uvicorn main:app --reload
@@ -108,7 +110,7 @@ FastAPI server will run at:
 
 http://127.0.0.1:8000
 
-3️⃣ Run the Node.js Backend
+## 3️⃣ Run the Node.js Backend
 
 Open a new terminal:
 
@@ -121,7 +123,7 @@ Backend runs at:
 
 http://localhost:5001
 
-4️⃣ Run the React Frontend
+## 4️⃣ Run the React Frontend
 
 Open another new terminal:
 
@@ -134,7 +136,7 @@ Frontend runs at:
 
 http://localhost:5173
 
-5️⃣ Access the Application
+## 5️⃣ Access the Application
 
 User Chat UI:
 http://localhost:5173
@@ -142,7 +144,7 @@ http://localhost:5173
 Admin Dashboard:
 http://localhost:5173/admin
 
-🔐 Environment Variables
+## 🔐 Environment Variables
 
 Create a .env file in the following locations.
 
@@ -154,7 +156,7 @@ JWT_SECRET=your_secret_key
 FastAPI (fastapi/.env)
 MODEL_NAME=detoxify
 
-📊 Admin Dashboard Analytics
+## 📊 Admin Dashboard Analytics
 
 The admin dashboard provides:
 
@@ -166,7 +168,7 @@ High-toxicity days
 
 Moderation effectiveness insights
 
-🧪 Example Moderation Flow
+## 🧪 Example Moderation Flow
 
 Input: You are useless and annoying
 
@@ -176,7 +178,7 @@ Action: Rephrased
 
 Output: I disagree with your approach.
 
-🎯 Use Cases
+## 🎯 Use Cases
 
 Online chat applications
 
@@ -186,7 +188,7 @@ Workplace communication tools
 
 Live streaming chat moderation
 
-👨‍⚖️ Judges Note
+## 👨‍⚖️ Judges Note
 
 This system demonstrates real-time AI moderation, ethical handling of user communication, and scalable system design, making it suitable for real-world deployment.
 
