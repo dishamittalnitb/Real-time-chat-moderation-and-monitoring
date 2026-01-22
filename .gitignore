@@ -1,0 +1,12 @@
+# Node
+node_modules
+dist
+build
+
+# Python
+__pycache__/
+venv/
+
+# Env
+.env
+.env.local
