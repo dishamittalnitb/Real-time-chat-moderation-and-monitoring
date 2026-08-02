@@ -39,7 +39,7 @@ app = FastAPI(title="Reliable Hinglish Moderation API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"
-    "https://my-chat-app-moderator.netlify.app/"],
+    "https://my-chat-app-moderator.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
