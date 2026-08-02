@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { axiosInstance } from "../lib/axios.js";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -13,12 +13,10 @@ const AdminLogin = () => {
     setError("");
 
     try {
-      console.log("LOGIN BUTTON CLICKED");
-
-      const res = await axios.post(
-        "http://localhost:5001/api/admin/login", // 👈 explicit URL
-        { email, password }
-      );
+      const res = await axiosInstance.post("/admin/login", {
+        email,
+        password,
+      });
 
       localStorage.setItem("adminToken", res.data.token);
       navigate("/admin/dashboard");
