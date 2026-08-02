@@ -1,21 +1,36 @@
+# For the llama-3.1-8b-instant model on Groq's current free tier, the published limits are approximately:
+
+# 30 requests per minute (RPM)
+# 14,400 requests per day (RPD)
+# 6,000 tokens per minute (TPM)
+# 500,000 tokens per day (TPD)
+
+# lib-imports
 import os
 import torch
 import json
 import re
-from fastapi import FastAPI
+
+#llm-model imports
 from pydantic import BaseModel
 from detoxify import Detoxify
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from groq import Groq
-import os
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+#fast-api imports
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+#.env imports
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env")
 
-# Now you can access it like this
+#groq api key
 api_key = os.getenv("MY_API_KEY")
+
 app = FastAPI(title="Reliable Hinglish Moderation API")
 
+#middleware that allows requests from the react frontend to be sent here.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -36,9 +51,9 @@ try:
 except FileNotFoundError:
     # Manual fallback list if file is missing
     slur_dict = [""]
-tox_model = Detoxify("original", device=device)
+tox_model = Detoxify("original", device=device) #detoxify detects the toxicity score --> also open source
 
-rephrase_model_name = "google/flan-t5-base"
+rephrase_model_name = "google/flan-t5-base" #this rephrases the message --> also open source
 tokenizer = AutoTokenizer.from_pretrained(rephrase_model_name)
 legacy_rephrase_model = AutoModelForSeq2SeqLM.from_pretrained(rephrase_model_name).to(device)
 
