@@ -22,7 +22,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://my-chat-app-moderator.netlify.app/", // Replace with your actual Vercel URL
+      "https://my-chat-app-moderator.netlify.app", // Replace with your actual Vercel URL
     ],
     credentials: true,
   })
