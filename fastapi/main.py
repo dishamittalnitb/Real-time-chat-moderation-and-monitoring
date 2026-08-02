@@ -22,8 +22,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 #.env imports
-from dotenv import load_dotenv
-load_dotenv(dotenv_path=".env")
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    # On Render, environment variables are already available
+    pass
+
 
 #groq api key
 api_key = os.getenv("MY_API_KEY")
@@ -33,7 +38,8 @@ app = FastAPI(title="Reliable Hinglish Moderation API")
 #middleware that allows requests from the react frontend to be sent here.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173"
+    "https://my-chat-app.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,11 +57,13 @@ try:
 except FileNotFoundError:
     # Manual fallback list if file is missing
     slur_dict = [""]
-tox_model = Detoxify("original", device=device) #detoxify detects the toxicity score --> also open source
 
-rephrase_model_name = "google/flan-t5-base" #this rephrases the message --> also open source
-tokenizer = AutoTokenizer.from_pretrained(rephrase_model_name)
-legacy_rephrase_model = AutoModelForSeq2SeqLM.from_pretrained(rephrase_model_name).to(device)
+
+tox_model = None
+tokenizer = None
+legacy_rephrase_model = None
+
+REPHRASE_MODEL_NAME = "google/flan-t5-base"
 
 class MessageRequest(BaseModel):
     text: str
@@ -132,10 +140,43 @@ Output: "yeh bilkul theek nahi lag raha"
     )
     return json.loads(completion.choices[0].message.content)
 
+def load_fallback_models():
+    """
+    Load Detoxify and FLAN-T5 only when required.
+    """
+    global tox_model
+    global tokenizer
+    global legacy_rephrase_model
+
+    if tox_model is None:
+        print("Loading Detoxify...")
+        tox_model = Detoxify("original", device=device)
+
+    if tokenizer is None:
+        print("Loading Tokenizer...")
+        tokenizer = AutoTokenizer.from_pretrained(REPHRASE_MODEL_NAME)
+
+    if legacy_rephrase_model is None:
+        print("Loading FLAN-T5...")
+        legacy_rephrase_model = AutoModelForSeq2SeqLM.from_pretrained(
+            REPHRASE_MODEL_NAME
+        ).to(device)
+
 def get_local_fallback_rephrase(text: str) -> str:
-    """Fallback rephraser using Flan-T5."""
-    inputs = tokenizer(f"rewrite politely: {text}", return_tensors="pt").to(device)
-    outputs = legacy_rephrase_model.generate(**inputs, max_length=128)
+    """
+    Rephrase toxic text using FLAN-T5.
+    Assumes load_fallback_models() has already been called.
+    """
+    inputs = tokenizer(
+        f"rewrite politely: {text}",
+        return_tensors="pt"
+    ).to(device)
+
+    outputs = legacy_rephrase_model.generate(
+        **inputs,
+        max_length=128
+    )
+
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 # ------------------ Main API Endpoint ------------------
@@ -175,6 +216,7 @@ async def moderate_message(request: MessageRequest):
         print(f"Groq failed, using Fallback Models: {e}")
         
         # PHASE 3: Fallback (Detoxify + Flan-T5)
+        load_fallback_models()
         scores = tox_model.predict(text)
         fallback_score = max(float(v) for v in scores.values())
         
@@ -201,4 +243,4 @@ async def moderate_message(request: MessageRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
