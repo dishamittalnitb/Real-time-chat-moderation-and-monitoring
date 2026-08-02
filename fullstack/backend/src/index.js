@@ -13,9 +13,6 @@ import { app, server } from "./lib/socket.js";
 import adminAuthRoutes from "./routes/adminAuth.routes.js";
 import adminStatsRoutes from "./routes/adminStats.routes.js";
 
-
-
-
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -43,7 +40,8 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-server.listen(PORT, () => {
-  console.log("server is running on PORT:" + PORT);
-  connectDB();
+connectDB().then(() => {
+  server.listen(PORT, () => {
+    console.log(`Server running on PORT: ${PORT}`);
+  });
 });
