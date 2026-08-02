@@ -38,7 +38,7 @@ app = FastAPI(title="Reliable Hinglish Moderation API")
 #middleware that allows requests from the react frontend to be sent here.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"
+    allow_origins=["http://localhost:5173",
     "https://my-chat-app-moderator.netlify.app"],
     allow_credentials=True,
     allow_methods=["*"],
